@@ -25,10 +25,27 @@ namespace PlayersWallet.Controllers
             var rng = new Random();
             return Enumerable.Range(1, 5).Select(index => new User
             {
-                UserId = Guid.NewGuid(),
+                Id = Guid.NewGuid(),
                 Balance = (decimal) (rng.NextDouble() * 100)
             })
             .ToArray();
+        }
+
+        [HttpGet("{userName}")]
+        public decimal GetUserBalance(string userName)
+        {
+            return 4.20M;
+        }
+
+        [HttpPost]
+        public User RegisterUser(string userName)
+        {
+            return new User
+            {
+                Id = Guid.NewGuid(),
+                UserName = userName,
+                Balance = 0
+            };
         }
     }
 }
