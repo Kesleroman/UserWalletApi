@@ -1,10 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 using PlayersWallet.Model;
-using System;
+using PlayersWallet.Repositories;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using System.Data;
 
 namespace PlayersWallet.Controllers
 {
@@ -12,40 +10,50 @@ namespace PlayersWallet.Controllers
     [Route("[controller]")]
     public class UserController : ControllerBase
     {
-        private readonly ILogger<UserController> _logger;
+        private readonly IUserRepository repository;
 
-        public UserController(ILogger<UserController> logger)
+        public UserController(IUserRepository repository)
         {
-            _logger = logger;
+            this.repository = repository;
         }
 
         [HttpGet]
         public IEnumerable<User> GetUsers()
         {
-            var rng = new Random();
-            return Enumerable.Range(1, 5).Select(index => new User
-            {
-                Id = Guid.NewGuid(),
-                Balance = (decimal) (rng.NextDouble() * 100)
-            })
-            .ToArray();
+            return repository.GetAllUsers();
         }
 
         [HttpGet("{userName}")]
-        public decimal GetUserBalance(string userName)
+        public ActionResult<decimal> GetUserBalance(string userName)
         {
-            return 4.20M;
+            var foundUser = repository.GetUserByName(userName);
+
+            if (foundUser is null)
+                return NotFound("User not found");
+
+            return Ok(foundUser.Balance);
         }
 
         [HttpPost]
-        public User RegisterUser(string userName)
+        public ActionResult<User> RegisterUser(string userName)
         {
-            return new User
+            var user = new User
             {
-                Id = Guid.NewGuid(),
                 UserName = userName,
                 Balance = 0
             };
+
+            try
+            {
+                repository.AddUser(user);
+                repository.SaveChanges();
+            }
+            catch (DuplicateNameException)
+            {
+                return BadRequest($"User with the username '{userName}' already exists.");
+            }
+
+            return CreatedAtAction("RegisterUser", new { userName }, user);
         }
     }
 }
