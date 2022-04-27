@@ -1,6 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Mvc;
 using PlayersWallet.Model;
-using System;
+using PlayersWallet.Repositories;
 using System.Collections.Generic;
 
 namespace PlayersWallet.Controllers
@@ -9,20 +10,31 @@ namespace PlayersWallet.Controllers
     [ApiController]
     public class TransactionController : ControllerBase
     {
-        [HttpGet]
-        public IEnumerable<Transaction> GetTransactions()
+        private readonly ITransactionRepository repository;
+        private readonly IMapper mapper;
+
+        public TransactionController(ITransactionRepository repository, IMapper mapper)
         {
-            return new Transaction[] 
-            { 
-                new() { Id = Guid.NewGuid(), Amount = 1.4M }, 
-                new() { Id = Guid.NewGuid(), Amount = 10.4M } 
-            };
+            this.repository = repository;
+            this.mapper = mapper;
+        }
+
+        [HttpGet("transactions/{username}")]
+        public ActionResult<IEnumerable<Transaction>> GetTransactions(string username)
+        {
+            var transactions = repository.GetAllTransactions(username);
+            if (transactions is null)
+                return NotFound();
+
+            var transactionsResult = mapper.Map<IEnumerable<TransactionDto>>(transactions);
+            return Ok(transactionsResult);
         }
 
         [HttpPost("register")]
-        public bool RegisterTransaction(Transaction transaction)
+        public ActionResult<bool> RegisterTransaction(Transaction transaction)
         {
-            return false;
+            var result = repository.RegisterTransaction(transaction);
+            return result ? Ok(result) : BadRequest(result);
         }
     }
 }

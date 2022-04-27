@@ -23,7 +23,7 @@ namespace PlayersWallet.Controllers
             return repository.GetAllUsers();
         }
 
-        [HttpGet("{userName}")]
+        [HttpGet("{userName}/balance")]
         public ActionResult<decimal> GetUserBalance(string userName)
         {
             var foundUser = repository.GetUserByName(userName);

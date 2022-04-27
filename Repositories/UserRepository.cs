@@ -1,5 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
-using PlayersWallet.DbContexts;
+﻿using PlayersWallet.DbContexts;
 using PlayersWallet.Model;
 using System.Collections.Generic;
 using System.Data;
@@ -9,9 +8,9 @@ namespace PlayersWallet.Repositories
 {
     public class UserRepository : IUserRepository
     {
-        private readonly UserContext _context;
+        private readonly PlayersWalletContext _context;
 
-        public UserRepository(UserContext context)
+        public UserRepository(PlayersWalletContext context)
         {
             _context = context;
         }

@@ -23,12 +23,15 @@ namespace PlayersWallet
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
-            services.AddDbContext<UserContext>(opt => opt.UseInMemoryDatabase("UserList"));
+            services.AddAutoMapper(typeof(Program));
+            services.AddDbContext<PlayersWalletContext>(opt => opt.UseInMemoryDatabase("PlayersWallet"));
             services.AddScoped<IUserRepository, UserRepository>();
+            services.AddScoped<ITransactionRepository, TransactionRepository>();
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "PlayersWallet", Version = "v1" });
             });
+            
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

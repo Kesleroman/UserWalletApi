@@ -1,4 +1,6 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace PlayersWallet.Model
 {
@@ -11,7 +13,11 @@ namespace PlayersWallet.Model
 
     public class Transaction
     {
+        [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.None)]
         public Guid Id { get; set; }
+
+        public Guid UserId { get; set; }
 
         public TransactionType TransactionType { get; set; }
 
