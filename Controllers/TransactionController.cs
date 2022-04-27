@@ -10,6 +10,7 @@ namespace PlayersWallet.Controllers
     [ApiController]
     public class TransactionController : ControllerBase
     {
+        private readonly object transactionLock = new();
         private readonly ITransactionRepository repository;
         private readonly IMapper mapper;
 
@@ -33,8 +34,11 @@ namespace PlayersWallet.Controllers
         [HttpPost("register")]
         public ActionResult<bool> RegisterTransaction(Transaction transaction)
         {
-            var result = repository.RegisterTransaction(transaction);
-            return result ? Ok(result) : BadRequest(result);
+            lock (transactionLock)
+            {
+                var result = repository.RegisterTransaction(transaction);
+                return result ? Ok(result) : BadRequest(result);
+            }
         }
     }
 }
